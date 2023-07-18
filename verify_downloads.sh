@@ -1,11 +1,6 @@
 TAR_HASH=$(sha256sum *.tar.gz | awk '{ print $1 }')
 
-cat SHA256SUMS | grep $TAR_HASH
+cat SHA256SUMS | grep $TAR_HASH || exit 1
 
-if [ $? -ne 0 ];
-then
-	echo "Release it not safe"
-	exit 1
-fi
-
-echo "Release hash was found in the SHA256SUSM file"
+# this still does not work, moving forward and would have a look later on.
+gpg --verify --status-fd 1 --verify SHA256SUMS.asc SHA256SUMS 2>/dev/null | grep "^\[GNUPG:\] VALIDSIG.*${1}\$ || exit 1

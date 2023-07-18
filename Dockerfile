@@ -16,6 +16,6 @@ RUN cd /tmp  \
 COPY verify_downloads.sh /tmp
 RUN cd /tmp \
     && chmod u+x verify_downloads.sh \
-    && ./verify_downloads.sh
+    && ./verify_downloads.sh ${TRUSTED_PUB_KEY_FINGERPRINT}
 
 

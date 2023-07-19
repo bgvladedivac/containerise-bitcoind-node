@@ -13,9 +13,21 @@ RUN cd /tmp  \
     https://bitcoincore.org/bin/bitcoin-core-${VERSION}/SHA256SUMS \
     https://bitcoincore.org/bin/bitcoin-core-${VERSION}/bitcoin-${VERSION}-${ARCH}-linux-gnu.tar.gz
 
-COPY verify_downloads.sh /tmp
+COPY ./scripts/verify_downloads.sh /tmp
 RUN cd /tmp \
     && chmod u+x verify_downloads.sh \
     && ./verify_downloads.sh ${TRUSTED_PUB_KEY_FINGERPRINT}
 
+WORKDIR /app
+
+RUN mv /tmp/bitcoin-${VERSION}-${ARCH}-linux-gnu.tar.gz /app \
+    && rm -rf /tmp/bitcoin-${VERSION}-${ARCH}-linux-gnu.tar.gz 
+
+RUN cd /app && tar -xvzf bitcoin-${VERSION}-${ARCH}-linux-gnu.tar.gz 
+COPY ./configuration/bitcoin.conf /app/bitcoin-${VERSION}/bin
+
+EXPOSE 8333
+
+ENTRYPOINT ["/app/bin/bitcoin-${VERSION}/bin/bitcoind", "-conf=/app/bin/bitcoin-${VERSION}/bin/bitcoin.conf"]
+#ENTRYPOINT ["tail", "-f", "/dev/null"]
 
